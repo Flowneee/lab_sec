@@ -1,0 +1,98 @@
+
+passwdmanager.cpp,181
+PasswdManager::PasswdManager(std::string passwd_file_path)PasswdManager5,66
+PasswdManager::~PasswdManager()~PasswdManager13,299
+User PasswdManager::read_user()read_user17,336
+
+gui.hpp,417
+#define __GUI_H____GUI_H__2,18
+struct LoginUserLoginUser8,79
+    std::string login;login10,98
+    std::string password;password11,121
+class MainFrame : public BaseMainFrameMainFrame14,155
+    virtual void m_button2OnButtonClick(wxCommandEvent& event) {event.Skip();};m_button2OnButtonClick20,281
+class LoginDialog : public BaseLoginDialogLoginDialog28,504
+    LoginUser* m_loginUser;m_loginUser31,558
+
+user.hpp,327
+class UserUser3,19
+    std::string login;login6,40
+    bool isAdmin;isAdmin7,63
+    bool isNew;isNew8,81
+    bool isBlocked;isBlocked9,97
+    bool isComplexityLimited;isComplexityLimited10,117
+    User() {};User13,153
+    User(std::string login, bool isAdmin, bool isNew,User14,168
+    ~User() {};~User18,385
+
+wxfb_gui.cpp,542
+BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )BaseMainFrame12,387
+BaseMainFrame::~BaseMainFrame()~BaseMainFrame40,1569
+BaseLoginDialog::BaseLoginDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )BaseLoginDialog49,1987
+BaseLoginDialog::~BaseLoginDialog()~BaseLoginDialog94,3671
+
+wxfb_gui.h,956
+#define __WXFB_GUI_H____WXFB_GUI_H__9,310
+class BaseMainFrame : public wxFrame BaseMainFrame31,903
+		wxButton* m_button1;m_button136,967
+		wxButton* m_button2;m_button237,990
+		wxButton* m_button3;m_button338,1013
+		virtual void OnCloseFrame( wxCloseEvent& event ) { event.Skip(); }OnCloseFrame41,1103
+		virtual void m_button1OnButtonClick( wxCommandEvent& event ) { event.Skip(); }m_button1OnButtonClick42,1172
+		virtual void m_button2OnButtonClick( wxCommandEvent& event ) { event.Skip(); }m_button2OnButtonClick43,1253
+class BaseLoginDialog : public wxDialog BaseLoginDialog57,1843
+		wxStaticText* m_staticText1;m_staticText162,1910
+		wxTextCtrl* m_textCtrl1;m_textCtrl163,1941
+		wxStaticText* m_staticText2;m_staticText264,1968
+		wxTextCtrl* m_textCtrl2;m_textCtrl265,1999
+		wxButton* m_button1;m_button166,2026
+		virtual void m_button1OnButtonClick( wxCommandEvent& event ) { event.Skip(); }m_button1OnButtonClick69,2116
+
+passwdmanager.hpp,92
+class PasswdManagerPasswdManager6,59
+    std::fstream m_passwd_file;m_passwd_file12,177
+
+main.hpp,77
+#define __MAIN_H____MAIN_H__2,19
+class MainApp : public wxAppMainApp8,83
+
+gui.cpp,572
+MainFrame::MainFrame(wxWindow* parent) : BaseMainFrame(parent)MainFrame3,20
+MainFrame::~MainFrame()~MainFrame7,88
+void MainFrame::m_button1OnButtonClick(wxCommandEvent& event)m_button1OnButtonClick11,117
+void MainFrame::OnCloseFrame(wxCommandEvent& event)OnCloseFrame19,306
+void MainFrame::login()login24,384
+LoginDialog::LoginDialog(wxWindow* parent, LoginUser* login_user) : BaseLoginDialog(parent)LoginDialog35,537
+LoginDialog::~LoginDialog()~LoginDialog40,670
+void LoginDialog::m_button1OnButtonClick(wxCommandEvent& event)m_button1OnButtonClick44,703
+
+Makefile,936
+CXX 		= g++CXX2,24
+CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14CXXFLAGS3,36
+LDFLAGS		= -lstdc++fsLDFLAGS4,79
+WX_DEBUG 	= yesWX_DEBUG5,101
+WX_MODE 	= --unicode=yes --debug=$(WX_DEBUG)WX_MODE6,117
+WX_LIBS 	= --libs base,coreWX_LIBS7,162
+WX_CXXFLAGS 	= $(shell wx-config --cxxflags $(WX_MODE))WX_CXXFLAGS8,190
+WX_LIBFLAGS    	= $(shell wx-config $(WX_LIBS) $(WX_MODE))WX_LIBFLAGS9,246
+SOURCES 	= main.cpp gui.cpp wxfb_gui.cpp user.cpp passwdmanager.cppSOURCES10,305
+OBJECTS 	= $(SOURCES:.cpp=.o)OBJECTS11,373
+EXECUTABLE 	= lab_secEXECUTABLE12,403
+release: WX_DEBUG = norelease14,426
+release: WX_DEBUG = noWX_DEBUG14,426
+release: CXXFLAGS += -O3 -srelease15,449
+release: $(EXECUTABLE)release16,477
+debug: WX_DEBUG = yesdebug18,501
+debug: WX_DEBUG = yesWX_DEBUG18,501
+debug: $(EXECUTABLE)debug19,523
+$(EXECUTABLE): $(OBJECTS)$(EXECUTABLE)21,545
+.cpp.o:.cpp.o24,624
+clean:clean27,677
+list:list30,711
+
+user.cpp,0
+
+main.cpp,132
+inline bool isRunFirstTime()isRunFirstTime7,112
+inline std::string btos(bool in)btos12,206
+bool MainApp::OnInit()OnInit19,305
