@@ -9,24 +9,24 @@ enum UserStrType { simple, detailed, sys };
 class User
 {
 public:
-    std::string login;
+    std::wstring login;
     bool isAdmin;
-    bool isNew;
     bool isBlocked;
+    bool isNew;
     bool isComplexityLimited;
-    std::string passwd;
+    std::wstring passwd;
 
 
     User() {};
-    User(std::string login, bool isAdmin, bool isNew,
-	 bool isBlocked, bool isComplexityLimited, std::string passwd)
-	: login(login), isAdmin(isAdmin), isNew(isNew),
-	  isBlocked(isBlocked), isComplexityLimited(isComplexityLimited),
+    User(std::wstring login, bool isAdmin, bool isBlocked, bool isNew,
+	 bool isComplexityLimited, std::wstring passwd)
+	: login(login), isAdmin(isAdmin), isBlocked(isBlocked), isNew(isNew),
+	  isComplexityLimited(isComplexityLimited),
           passwd(passwd) {};
-    explicit User(std::string str);
+    explicit User(std::wstring str);
     virtual ~User() {};
 
-    std::string str(UserStrType type = simple);
+    std::wstring str(UserStrType type = simple);
 private:
 
 };

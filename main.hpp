@@ -3,8 +3,6 @@
 
 #include <wx/wx.h>
 
-bool isRunFirstTime();
-
 class MainApp : public wxApp
 {
 public:

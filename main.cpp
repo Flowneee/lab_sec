@@ -3,12 +3,7 @@
 #include "main.hpp"
 #include "gui.hpp"
 
-inline std::string btos(bool in)
-{
-    return (in ? "true" : "false");
-}
-
-IMPLEMENT_APP(MainApp);
+IMPLEMENT_APP(MainApp)
 
 bool MainApp::OnInit()
 {

@@ -1,0 +1,5 @@
+.projectile
+*.o
+TAGS
+*.out
+lab_sec

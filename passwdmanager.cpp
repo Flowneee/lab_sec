@@ -1,42 +1,48 @@
 #include <experimental/filesystem>
 
 #include "passwdmanager.hpp"
+#include "functions.hpp"
 
-PasswdManager::PasswdManager(std::string passwd_file_path)
+PasswdManager::PasswdManager(std::wstring passwd_file_path)
 {
-    if (!std::experimental::filesystem::exists(passwd_file_path)) {
+    if (!std::experimental::filesystem::exists(wstring_to_string(passwd_file_path))) {
 	this->create_default_file();
     }
-    this->m_passwd_file.open(passwd_file_path.c_str(),
-                             std::fstream::in | std::fstream::out);
+    std::wfstream passwd(wstring_to_string(passwd_file_path),
+                        std::wfstream::in | std::wfstream::out);
     this->m_passwd_file_path = passwd_file_path;
-    std::string tmp;
-    while(this->m_passwd_file >> tmp) {
+    std::wstring tmp;
+    while(passwd >> tmp) {
         this->users.push_back(User(tmp));
     }
+    passwd.close();
 }
 
 PasswdManager::~PasswdManager()
 {
 }
 
-void PasswdManager::read_from_file(std::string passwd_file_path)
+void PasswdManager::read_from_file(std::wstring passwd_file_path)
 {
-    this->m_passwd_file.open(passwd_file_path.c_str(),
-                             std::fstream::in | std::fstream::out);
+    if (!std::experimental::filesystem::exists(wstring_to_string(passwd_file_path))) {
+	this->create_default_file();
+    }
+    std::wfstream passwd(wstring_to_string(passwd_file_path),
+                         std::fstream::in | std::wfstream::out);
     this->m_passwd_file_path = passwd_file_path;
-    std::string tmp;
-    while(this->m_passwd_file >> tmp) {
+    std::wstring tmp;
+    while(passwd >> tmp) {
         this->users.push_back(User(tmp));
     }
+    passwd.close();
 }
 
-std::vector<User> PasswdManager::get_users()
+std::vector<User>* PasswdManager::get_users()
 {
-    return this->users;
+    return &(this->users);
 }
 
-bool PasswdManager::is_correct_user(std::string login, std::string passwd)
+bool PasswdManager::is_correct_user(std::wstring login, std::wstring passwd)
 {
     for (auto i: this->users) {
         if (i.login == login && i.passwd == passwd) {
@@ -46,20 +52,19 @@ bool PasswdManager::is_correct_user(std::string login, std::string passwd)
     return false;
 }
 
-bool PasswdManager::get_user_by_login(std::string login, User* user)
+User* PasswdManager::get_user_by_login(std::wstring login)
 {
-    for (auto i: this->users) {
+    for (auto &i: this->users) {
         if (i.login == login) {
-            *user = i;
-            return true;
+            return &i;
         }
     }
-    return false;
+    return nullptr;
 }
 
 void PasswdManager::create_default_file()
 {
-    std::ofstream passwd("passwd");
+    std::wofstream passwd("passwd");
     if (!std::experimental::filesystem::exists("passwd")) {
         throw std::runtime_error("Невозможно создать passwd");
     }
@@ -68,10 +73,23 @@ void PasswdManager::create_default_file()
     passwd.close();
 }
 
-void PasswdManager::write(std::string passwd_file_path)
+void PasswdManager::write(std::wstring passwd_file_path)
 {
-    this->m_passwd_file.seekp(std::ios_base::beg);
+
+    std::wofstream passwd(wstring_to_string(passwd_file_path),
+                          std::wofstream::trunc);
     for (auto i: this->users) {
-        this->m_passwd_file << i.str(sys);
+        passwd << i.str(sys) << std::endl;
     }
+    passwd.close();
+}
+
+User* PasswdManager::add_user(std::wstring login)
+{
+    if (this->get_user_by_login(login) == nullptr) {
+        User user(login, false, false, true, true, L"");
+        this->users.push_back(user);
+        return &(this->users.back());
+    }
+    return nullptr;
 }

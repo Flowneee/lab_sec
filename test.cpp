@@ -1,15 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <locale>
 
-#include "user.hpp"
-#include "passwdmanager.hpp"
+#include "functions.hpp"
 
 int main (int argc, char *argv[])
 {
-    PasswdManager pm("passwd");
-    for (auto i: pm.get_users()) {
-        std::cout << i.str(sys) << std::endl;
-    }
+    bool a = true;
+    std::wcout << bool_to_wstring(a, "ru") << std::endl;
+    std::wcout << bool_to_wstring(!a) << std::endl;
     return 0;
 }
