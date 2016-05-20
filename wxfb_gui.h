@@ -43,6 +43,7 @@ class BaseMainFrame : public wxFrame
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void listCtrl1OnListItemSelected( wxListEvent& event ) { event.Skip(); }
 		virtual void button1OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void button2OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void button3OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -119,11 +120,11 @@ class BaseChangePasswordDialog : public wxDialog
 	
 	protected:
 		wxStaticText* staticText5;
-		wxTextCtrl* m_textCtrl4;
-		wxStaticText* m_staticText6;
-		wxTextCtrl* m_textCtrl5;
-		wxStaticText* m_staticText7;
-		wxTextCtrl* m_textCtrl6;
+		wxTextCtrl* textCtrl4;
+		wxStaticText* staticText6;
+		wxTextCtrl* textCtrl5;
+		wxStaticText* staticText7;
+		wxTextCtrl* textCtrl6;
 		wxButton* button9;
 		wxButton* button10;
 		

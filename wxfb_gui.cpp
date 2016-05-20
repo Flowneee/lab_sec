@@ -16,7 +16,7 @@ BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& t
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 	
-	listCtrl1 = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_HRULES|wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_VRULES );
+	listCtrl1 = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_HRULES|wxLC_REPORT|wxLC_SINGLE_SEL|wxLC_VRULES|wxNO_BORDER );
 	bSizer1->Add( listCtrl1, 1, wxALL|wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer2;
@@ -37,7 +37,7 @@ BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	bSizer2->Add( button3, 1, wxALL|wxEXPAND, 5 );
 	
-	button4 = new wxButton( this, wxID_ANY, wxT("Установить сложность пароля"), wxDefaultPosition, wxSize( 233,34 ), 0 );
+	button4 = new wxButton( this, wxID_ANY, wxT("Включить сложность пароля"), wxDefaultPosition, wxSize( 233,34 ), 0 );
 	button4->SetMinSize( wxSize( 233,34 ) );
 	
 	bSizer2->Add( button4, 1, wxALL|wxEXPAND, 5 );
@@ -58,6 +58,7 @@ BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( BaseMainFrame::OnClose ) );
+	listCtrl1->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( BaseMainFrame::listCtrl1OnListItemSelected ), NULL, this );
 	button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button1OnButtonClick ), NULL, this );
 	button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button2OnButtonClick ), NULL, this );
 	button3->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button3OnButtonClick ), NULL, this );
@@ -69,6 +70,7 @@ BaseMainFrame::~BaseMainFrame()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( BaseMainFrame::OnClose ) );
+	listCtrl1->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( BaseMainFrame::listCtrl1OnListItemSelected ), NULL, this );
 	button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button1OnButtonClick ), NULL, this );
 	button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button2OnButtonClick ), NULL, this );
 	button3->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button3OnButtonClick ), NULL, this );
@@ -111,7 +113,7 @@ BaseLoginDialog::BaseLoginDialog( wxWindow* parent, wxWindowID id, const wxStrin
 	button1 = new wxButton( this, wxID_ANY, wxT("Войти"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer3->Add( button1, 0, wxALL|wxEXPAND, 5 );
 	
-	staticText3 = new wxStaticText( this, wxID_ANY, wxT("\n"), wxDefaultPosition, wxDefaultSize, 0 );
+	staticText3 = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	staticText3->Wrap( -1 );
 	staticText3->Hide();
 	
@@ -207,48 +209,26 @@ BaseChangePasswordDialog::BaseChangePasswordDialog( wxWindow* parent, wxWindowID
 	staticText5->Wrap( -1 );
 	fgSizer2->Add( staticText5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_textCtrl4 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
-	#ifdef __WXGTK__
-	if ( !m_textCtrl4->HasFlag( wxTE_MULTILINE ) )
-	{
-	m_textCtrl4->SetMaxLength(  );
-	}
-	#else
-	m_textCtrl4->SetMaxLength(  );
-	#endif
-	m_textCtrl4->SetMinSize( wxSize( 200,-1 ) );
+	textCtrl4 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
+	textCtrl4->SetMinSize( wxSize( 200,-1 ) );
 	
-	fgSizer2->Add( m_textCtrl4, 0, wxALL|wxEXPAND, 5 );
+	fgSizer2->Add( textCtrl4, 0, wxALL|wxEXPAND, 5 );
 	
-	m_staticText6 = new wxStaticText( this, wxID_ANY, wxT("Новый пароль"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText6->Wrap( -1 );
-	fgSizer2->Add( m_staticText6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	staticText6 = new wxStaticText( this, wxID_ANY, wxT("Новый пароль"), wxDefaultPosition, wxDefaultSize, 0 );
+	staticText6->Wrap( -1 );
+	fgSizer2->Add( staticText6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_textCtrl5 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
-	#ifdef __WXGTK__
-	if ( !m_textCtrl5->HasFlag( wxTE_MULTILINE ) )
-	{
-	m_textCtrl5->SetMaxLength(  );
-	}
-	#else
-	m_textCtrl5->SetMaxLength(  );
-	#endif
-	fgSizer2->Add( m_textCtrl5, 0, wxALL|wxEXPAND, 5 );
+	textCtrl5 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
+	textCtrl5->SetMinSize( wxSize( 200,-1 ) );
 	
-	m_staticText7 = new wxStaticText( this, wxID_ANY, wxT("Еще раз новый пароль"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText7->Wrap( -1 );
-	fgSizer2->Add( m_staticText7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	fgSizer2->Add( textCtrl5, 0, wxALL|wxEXPAND, 5 );
 	
-	m_textCtrl6 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
-	#ifdef __WXGTK__
-	if ( !m_textCtrl6->HasFlag( wxTE_MULTILINE ) )
-	{
-	m_textCtrl6->SetMaxLength(  );
-	}
-	#else
-	m_textCtrl6->SetMaxLength(  );
-	#endif
-	fgSizer2->Add( m_textCtrl6, 0, wxALL|wxEXPAND, 5 );
+	staticText7 = new wxStaticText( this, wxID_ANY, wxT("Еще раз новый пароль"), wxDefaultPosition, wxDefaultSize, 0 );
+	staticText7->Wrap( -1 );
+	fgSizer2->Add( staticText7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	textCtrl6 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD );
+	fgSizer2->Add( textCtrl6, 0, wxALL|wxEXPAND, 5 );
 	
 	
 	bSizer9->Add( fgSizer2, 0, wxEXPAND, 5 );

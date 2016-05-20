@@ -15,7 +15,7 @@ public:
     void write(std::wstring passwd_file_path);
     void write() { this->write(this->m_passwd_file_path); }
     void read_from_file(std::wstring passwd_file_path);
-    bool is_correct_user(std::wstring login, std::wstring passwd);
+    bool is_correct_user(std::wstring login, std::wstring password);
     User* add_user(std::wstring login);
 private:
     std::wstring m_passwd_file_path;

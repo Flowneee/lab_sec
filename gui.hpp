@@ -20,54 +20,72 @@ protected:
     virtual void button3OnButtonClick(wxCommandEvent& event);
     virtual void button4OnButtonClick(wxCommandEvent& event);
     virtual void button5OnButtonClick(wxCommandEvent& event);
+    virtual void listCtrl1OnListItemSelected(wxListEvent& event);
 
     PasswdManager passwd_manager;
-    User current_user;
+    User* current_user;
 public:
     MainFrame(wxWindow* parent);
     virtual ~MainFrame();
     void initialize_frame(); // начальная настройка фрейма после логина
-    bool login(); // функция, вызывающая диалог логина
     void configure_controls();
     void fill_row(int index, User* user);
-
     User* get_selected_user();
+    PasswdManager* get_passwd_manager();
+    void set_current_user(User* user);
+    void update_frame();
 };
 
 class LoginDialog : public BaseLoginDialog
 {
-private:
-    std::wstring* login;
-    std::wstring* passwd;
+public:
+    LoginDialog(wxWindow* parent) : BaseLoginDialog(parent) {};
+    virtual ~LoginDialog() {};
+
+    int login(std::wstring login, std::wstring);
+    virtual void clear_input(char arg = 3); // 0 - NONE, 1 - LOGIN, 2 - PASSWORD, 3 - BOTH
+    void show_error(std::wstring message);
 protected:
     virtual void button1OnButtonClick(wxCommandEvent& event);
-    virtual void OnClose(wxCloseEvent& event);
-public:
-    LoginDialog(wxWindow* parent, std::wstring* login, std::wstring* passwd,
-                std::wstring label = L"");
-    virtual ~LoginDialog();
+private:
+    int login_attempts = 3;
 };
 
 class AddUserDialog : public BaseAddUserDialog
 {
+public:
+    AddUserDialog(wxWindow* parent,  User** new_user)
+        : BaseAddUserDialog(parent), new_user(new_user) {};
+    virtual ~AddUserDialog() {};
 private:
-    PasswdManager* passwd_manager;
     User** new_user;
 protected:
     virtual void button7OnButtonClick(wxCommandEvent& event);
     virtual void button8OnButtonClick(wxCommandEvent& event);
-public:
-    AddUserDialog(wxWindow* parent, PasswdManager* passwd_manager, User** new_user);
-    virtual ~AddUserDialog();
 };
 
 class ChangePasswordDialog : public BaseChangePasswordDialog
 {
-private:
-    PasswdManager* passwd_manager;
+public:
+    ChangePasswordDialog(wxWindow* parent) : BaseChangePasswordDialog(parent) {};
+    virtual ~ChangePasswordDialog() {};
 protected:
     virtual void button9OnButtonClick(wxCommandEvent& event);
     virtual void button10OnButtonClick(wxCommandEvent& event);
-}
+    virtual void OnClose(wxCloseEvent& event);
+    void change_password_for_user(User* user);
+};
+
+class SetPasswordDialog : public ChangePasswordDialog
+{
+public:
+    SetPasswordDialog(wxWindow* parent, User* user);
+    virtual ~SetPasswordDialog() {};
+protected:
+    virtual void button9OnButtonClick(wxCommandEvent& event);
+private:
+    User* user;
+};
+
 
 #endif

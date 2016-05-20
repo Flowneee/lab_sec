@@ -1,7 +1,12 @@
 #include <experimental/filesystem>
+#include <locale>
+#include <codecvt>
 
 #include "passwdmanager.hpp"
 #include "functions.hpp"
+
+const std::locale utf8_locale = std::locale(std::locale(),
+                                            new std::codecvt_utf8<wchar_t>());
 
 PasswdManager::PasswdManager(std::wstring passwd_file_path)
 {
@@ -29,6 +34,7 @@ void PasswdManager::read_from_file(std::wstring passwd_file_path)
     }
     std::wfstream passwd(wstring_to_string(passwd_file_path),
                          std::fstream::in | std::wfstream::out);
+    passwd.imbue(utf8_locale);
     this->m_passwd_file_path = passwd_file_path;
     std::wstring tmp;
     while(passwd >> tmp) {
@@ -42,12 +48,12 @@ std::vector<User>* PasswdManager::get_users()
     return &(this->users);
 }
 
-bool PasswdManager::is_correct_user(std::wstring login, std::wstring passwd)
+bool PasswdManager::is_correct_user(std::wstring login, std::wstring password)
 {
     for (auto i: this->users) {
-        if (i.login == login && i.passwd == passwd) {
-            return true;
-        }
+        if (i.login == login && i.compare_password(password)) {
+                return true;
+            }
     }
     return false;
 }
@@ -78,8 +84,10 @@ void PasswdManager::write(std::wstring passwd_file_path)
 
     std::wofstream passwd(wstring_to_string(passwd_file_path),
                           std::wofstream::trunc);
+    passwd.imbue(utf8_locale);
     for (auto i: this->users) {
         passwd << i.str(sys) << std::endl;
+        auto status = passwd.rdstate();
     }
     passwd.close();
 }

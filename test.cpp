@@ -2,13 +2,15 @@
 #include <vector>
 #include <sstream>
 #include <locale>
+#include <string>
 
 #include "functions.hpp"
+#include "validator.hpp"
 
 int main (int argc, char *argv[])
 {
-    bool a = true;
-    std::wcout << bool_to_wstring(a, "ru") << std::endl;
-    std::wcout << bool_to_wstring(!a) << std::endl;
+    std::wstring password = L"AФ12,.";
+    std::wcout << latin(password) << std::endl << cyrillic(password) << std::endl
+               << number(password) << std::endl << punctuation(password) <<std::endl;
     return 0;
 }
