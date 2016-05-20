@@ -19,4 +19,6 @@ std::wstring bool_to_wstring(bool in, std::string locale = "en");
 
 std::vector<std::string> split(const std::string &str, char delimiter);
 std::vector<std::wstring> wsplit(const std::wstring &str, wchar_t delimiter);
+
+std::wstring hash_str(std::wstring in);
 #endif

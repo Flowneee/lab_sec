@@ -9,15 +9,15 @@ std::wstring User::str(UserStrType type)
             sstr << L"Login: " << this->login << L" isAdmin: " << this->isAdmin
                  << L" isBlocked: " << this->isBlocked << L" isNew: " << this->isNew
                  << L" isComplexityLimited: " << this->validatorData
-                 << L" Password: " << this->password;
+                 << L" Hash: " << this->hash;
             break;
         case simple:
-            sstr << this->login << ' ' << this->password;
+            sstr << this->login << ' ' << this->hash;
             break;
         case sys:
             sstr << this->login << ':' << this->isAdmin << ':' << this->isBlocked
                  << ':' << this->isNew << ':' << this->validatorData
-                 << ':' << this->password;
+                 << ':' << this->hash;
             break;
     }
     return sstr.str();
@@ -32,16 +32,21 @@ User::User(std::wstring str)
     this->isNew               = std::stoi(v[3]);
     this->validatorData       = std::stoi(v[4]);
     if (v.size() < 6) {
-        this->password = L"";
+        this->hash = L"";
     }
     else {
-        this->password = v[5];
+        this->hash = v[5];
+        /*for (unsigned int i = 6; i < v.size(); i++) {
+            this->password += L":";
+            this->password += v[i];
+            }*/
+
     }
 }
 
 bool User::compare_password(std::wstring password)
 {
-    return password == this->password;
+    return hash_str(password) == this->hash;
 }
 
 bool User::validate_password(std::wstring password)
@@ -63,6 +68,6 @@ ChangePasswordStatus User::change_password(std::wstring old_password,
     if (this->validatorData && !this->validate_password(new_password)) {
         return NEW_NOT_VALID;
     }
-    this->password = new_password;
+    this->hash = hash_str(new_password);
     return OK;
 }

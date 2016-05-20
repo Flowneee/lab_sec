@@ -24,9 +24,9 @@ public:
 
     User() {};
     User(std::wstring login, bool isAdmin, bool isBlocked, bool isNew,
-	 int validatorData, std::wstring password)
+	 int validatorData, std::wstring hash)
 	: login(login), isAdmin(isAdmin), isBlocked(isBlocked), isNew(isNew),
-          validatorData(validatorData), password(password) {};
+          validatorData(validatorData), hash(hash) {};
     explicit User(std::wstring str);
     virtual ~User() {};
 
@@ -38,7 +38,7 @@ public:
     bool compare_password(std::wstring password);
 private:
     bool validate_password(std::wstring password);
-    std::wstring password;
+    std::wstring hash;
 };
 
 #endif

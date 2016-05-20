@@ -71,11 +71,11 @@ User* PasswdManager::get_user_by_login(std::wstring login)
 void PasswdManager::create_default_file()
 {
     std::wofstream passwd("passwd");
+    passwd.imbue(utf8_locale);
     if (!std::experimental::filesystem::exists("passwd")) {
         throw std::runtime_error("Невозможно создать passwd");
     }
-    passwd << "ADMIN:1:0:0:1:admin555" << std::endl;
-    passwd << "bashlykova:0:0:0:1:basha89" << std::endl;
+    passwd << "ADMIN:1:0:1:1:" << std::endl;
     passwd.close();
 }
 
