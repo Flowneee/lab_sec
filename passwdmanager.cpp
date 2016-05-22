@@ -10,12 +10,12 @@ const std::locale utf8_locale = std::locale(std::locale(),
 
 PasswdManager::PasswdManager(std::wstring passwd_file_path)
 {
+    this->passwd_file_path = passwd_file_path;
     if (!std::experimental::filesystem::exists(wstring_to_string(passwd_file_path))) {
 	this->create_default_file();
     }
     std::wfstream passwd(wstring_to_string(passwd_file_path),
                         std::wfstream::in | std::wfstream::out);
-    this->m_passwd_file_path = passwd_file_path;
     std::wstring tmp;
     while(passwd >> tmp) {
         this->users.push_back(User(tmp));
@@ -29,13 +29,13 @@ PasswdManager::~PasswdManager()
 
 void PasswdManager::read_from_file(std::wstring passwd_file_path)
 {
+    this->passwd_file_path = passwd_file_path;
     if (!std::experimental::filesystem::exists(wstring_to_string(passwd_file_path))) {
 	this->create_default_file();
     }
     std::wfstream passwd(wstring_to_string(passwd_file_path),
                          std::fstream::in | std::wfstream::out);
     passwd.imbue(utf8_locale);
-    this->m_passwd_file_path = passwd_file_path;
     std::wstring tmp;
     while(passwd >> tmp) {
         this->users.push_back(User(tmp));
@@ -70,9 +70,9 @@ User* PasswdManager::get_user_by_login(std::wstring login)
 
 void PasswdManager::create_default_file()
 {
-    std::wofstream passwd("passwd");
+    std::wofstream passwd(wstring_to_string(this->passwd_file_path));
     passwd.imbue(utf8_locale);
-    if (!std::experimental::filesystem::exists("passwd")) {
+    if (!std::experimental::filesystem::exists(this->passwd_file_path)) {
         throw std::runtime_error("Невозможно создать passwd");
     }
     passwd << "ADMIN:1:0:1:1:" << std::endl;

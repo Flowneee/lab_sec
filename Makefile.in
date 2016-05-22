@@ -1,16 +1,22 @@
-# my wxWidgets Makefile
+# my wxWidgets Makefile.in
+prefix 		= @prefix@
+bindir 		= @bindir@
+exec_prefix 	= @exec_prefix@
+sysconfdir 	= @sysconfdir@
+wx		= @wx@
 CXX 		= g++
-CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14
-LDFLAGS		= -lstdc++fs
-WX_CONFIG_PATH	=
+CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14 -DCONFDIR='L"$(sysconfdir)"'
+LDFLAGS		= -lstdc++fs -lcrypto
 WX_DEBUG 	= yes
 WX_MODE 	= --unicode=yes --debug=$(WX_DEBUG)
 WX_LIBS 	= --libs base,core,adv
-WX_CXXFLAGS 	= $(shell $(WX_CONFIG_PATH)wx-config --cxxflags $(WX_MODE))
-WX_LIBFLAGS    	= $(shell $(WX_CONFIG_PATH)wx-config $(WX_LIBS) $(WX_MODE))
+WX_CXXFLAGS 	= $(shell $(wx) --cxxflags $(WX_MODE))
+WX_LIBFLAGS    	= $(shell $(wx) $(WX_LIBS) $(WX_MODE))
 SOURCES 	= main.cpp gui.cpp wxfb_gui.cpp user.cpp passwdmanager.cpp functions.cpp validator.cpp
 OBJECTS 	= $(SOURCES:.cpp=.o)
 EXECUTABLE 	= lab_sec
+
+all: release
 
 release: WX_DEBUG = no
 release: CXXFLAGS += -O3 -s
@@ -29,7 +35,15 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 	rm -rf *.o $(EXECUTABLE)
 
+install:
+	install $(EXECUTABLE) $(bindir)/$(EXECUTABLE)
+
+uninstall:
+	rm $(bindir)/$(EXECUTABLE)
+	rm $(sysconfdir)/passwd
+
 list:
+	@echo all
 	@echo debug
 	@echo release
 	@echo clean

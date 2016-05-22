@@ -5,3 +5,7 @@ TAGS
 lab_sec
 *~
 passwd
+Makefile
+autom4te.cache
+Makefile.old
+config.*

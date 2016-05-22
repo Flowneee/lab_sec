@@ -36,11 +36,6 @@ User::User(std::wstring str)
     }
     else {
         this->hash = v[5];
-        /*for (unsigned int i = 6; i < v.size(); i++) {
-            this->password += L":";
-            this->password += v[i];
-            }*/
-
     }
 }
 
@@ -68,6 +63,7 @@ ChangePasswordStatus User::change_password(std::wstring old_password,
     if (this->validatorData && !this->validate_password(new_password)) {
         return NEW_NOT_VALID;
     }
+    this->isNew = false;
     this->hash = hash_str(new_password);
     return OK;
 }

@@ -8,7 +8,7 @@
 
 MainFrame::MainFrame(wxWindow* parent) : BaseMainFrame(parent)
 {
-    this->passwd_manager.read_from_file(L"passwd");
+    this->passwd_manager.read_from_file(PASSWD_PATH);
 }
 
 MainFrame::~MainFrame()
@@ -77,7 +77,8 @@ void MainFrame::button2OnButtonClick(wxCommandEvent &event)
                         wxOK | wxCENTRE | wxICON_WARNING).ShowModal();
         return;
     }
-    ChangePasswordDialog(static_cast<wxWindow*>(this)).ShowModal();
+    ChangePasswordDialog(static_cast<wxWindow*>(this),
+                         this->get_selected_user()).ShowModal();
 }
 
 void MainFrame::button3OnButtonClick(wxCommandEvent &event)
@@ -187,9 +188,9 @@ void LoginDialog::button1OnButtonClick(wxCommandEvent& event)
         return;
     }
     if (user->isNew) {
-        wxMessageDialog(NULL, (L"Введите новый пароль для введеного пользователя!"))
+        wxMessageDialog(NULL, (L"Установите новый пароль для пользователя!"))
             .ShowModal();
-        int ret = SetPasswordDialog(static_cast<MainFrame*>(this->GetParent()),
+        int ret = ChangePasswordDialog(static_cast<MainFrame*>(this->GetParent()),
                                     user).ShowModal();
         if (ret == -1 || ret == wxID_CANCEL) {
             this->show_error(L"Вы не установили пароль для пользователя!");
@@ -197,7 +198,6 @@ void LoginDialog::button1OnButtonClick(wxCommandEvent& event)
             return;
         }
         else {
-            user->isNew = false;
             goto success_login;
         }
         return;
@@ -271,20 +271,23 @@ void AddUserDialog::button8OnButtonClick(wxCommandEvent &event)
 
 
 //**********ChangePasswordDialog**********
+ChangePasswordDialog::ChangePasswordDialog(wxWindow* parent, User* user)
+    : BaseChangePasswordDialog(parent), user(user)
+{
+    if (user->isNew) {
+        this->new_password_mode();
+    }
+}
+
 void ChangePasswordDialog::button9OnButtonClick(wxCommandEvent& event)
 {
-    User* selected_user = static_cast<MainFrame*>(this->GetParent())->get_selected_user();
-    this->change_password_for_user(selected_user);
+    //User* selected_user = static_cast<MainFrame*>(this->GetParent())->get_selected_user();
+    this->change_password_for_user(this->user);
 }
 
 void ChangePasswordDialog::button10OnButtonClick(wxCommandEvent& event)
 {
     this->EndModal(-1);
-}
-
-void ChangePasswordDialog::OnClose(wxCloseEvent& event)
-{
-    this->SetReturnCode(-1);
 }
 
 void ChangePasswordDialog::change_password_for_user(User *user)
@@ -319,9 +322,7 @@ void ChangePasswordDialog::change_password_for_user(User *user)
     this->textCtrl6->SetValue(L"");
 }
 
-
-SetPasswordDialog::SetPasswordDialog(wxWindow* parent, User* user)
-    : ChangePasswordDialog(parent), user(user)
+void ChangePasswordDialog::new_password_mode()
 {
     this->SetLabel(L"Установка пароля");
     this->textCtrl4->Disable();
@@ -329,9 +330,4 @@ SetPasswordDialog::SetPasswordDialog(wxWindow* parent, User* user)
     this->staticText5->Disable();
     this->staticText5->Hide();
     this->Fit();
-}
-
-void SetPasswordDialog::button9OnButtonClick(wxCommandEvent& event)
-{
-    this->change_password_for_user(this->user);
 }

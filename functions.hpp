@@ -21,4 +21,5 @@ std::vector<std::string> split(const std::string &str, char delimiter);
 std::vector<std::wstring> wsplit(const std::wstring &str, wchar_t delimiter);
 
 std::wstring hash_str(std::wstring in);
+bool simpleSHA256(void* input, unsigned long length, unsigned char* md);
 #endif

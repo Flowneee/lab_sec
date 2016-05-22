@@ -67,25 +67,15 @@ protected:
 class ChangePasswordDialog : public BaseChangePasswordDialog
 {
 public:
-    ChangePasswordDialog(wxWindow* parent) : BaseChangePasswordDialog(parent) {};
+    ChangePasswordDialog(wxWindow* parent, User* user);
     virtual ~ChangePasswordDialog() {};
 protected:
     virtual void button9OnButtonClick(wxCommandEvent& event);
     virtual void button10OnButtonClick(wxCommandEvent& event);
-    virtual void OnClose(wxCloseEvent& event);
+    void new_password_mode();
     void change_password_for_user(User* user);
-};
 
-class SetPasswordDialog : public ChangePasswordDialog
-{
-public:
-    SetPasswordDialog(wxWindow* parent, User* user);
-    virtual ~SetPasswordDialog() {};
-protected:
-    virtual void button9OnButtonClick(wxCommandEvent& event);
-private:
     User* user;
 };
-
 
 #endif
