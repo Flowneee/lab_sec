@@ -264,3 +264,45 @@ BaseChangePasswordDialog::~BaseChangePasswordDialog()
 	button10->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseChangePasswordDialog::button10OnButtonClick ), NULL, this );
 	
 }
+
+BaseCryptoPasswordDialog::BaseCryptoPasswordDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer9;
+	bSizer9 = new wxBoxSizer( wxVERTICAL );
+	
+	wxBoxSizer* bSizer10;
+	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+	
+	staticText8 = new wxStaticText( this, wxID_ANY, wxT("Пароль"), wxDefaultPosition, wxDefaultSize, 0 );
+	staticText8->Wrap( -1 );
+	bSizer10->Add( staticText8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	textCtrl7 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	textCtrl7->SetMinSize( wxSize( 200,-1 ) );
+	
+	bSizer10->Add( textCtrl7, 1, wxALL|wxEXPAND, 5 );
+	
+	
+	bSizer9->Add( bSizer10, 1, wxEXPAND, 5 );
+	
+	button11 = new wxButton( this, wxID_ANY, wxT("ОК"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer9->Add( button11, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizer9 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	button11->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseCryptoPasswordDialog::button11OnButtonClick ), NULL, this );
+}
+
+BaseCryptoPasswordDialog::~BaseCryptoPasswordDialog()
+{
+	// Disconnect Events
+	button11->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseCryptoPasswordDialog::button11OnButtonClick ), NULL, this );
+	
+}

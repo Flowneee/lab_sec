@@ -1,14 +1,16 @@
+#include <wx/msgdlg.h>
+#include <experimental/filesystem>
+
 #include "gui.hpp"
 #include "user.hpp"
 #include "functions.hpp"
 #include "main.hpp"
-
-#include <wx/msgdlg.h>
+#include "crypto.hpp"
 
 
 MainFrame::MainFrame(wxWindow* parent) : BaseMainFrame(parent)
 {
-    this->passwd_manager.read_from_file(PASSWD_PATH);
+    this->write_on_close = true;
 }
 
 MainFrame::~MainFrame()
@@ -17,10 +19,37 @@ MainFrame::~MainFrame()
 
 void MainFrame::initialize_frame()
 {
-    int ret = LoginDialog(static_cast<wxWindow*>(this)).ShowModal();
-    if (ret == -1 || ret == wxID_CANCEL) {
-        this->Close(false);
-        return;
+    int ret;
+    if (std::experimental::filesystem::file_size(PASSWD_PATH) < 6) {
+        this->passwd_manager.set_default();
+        ret = EncryptPasswordDialog(static_cast<wxWindow*>(this)).ShowModal();
+        if (ret == -1 || ret == wxID_CANCEL) {
+            this->write_on_close = false;
+            this->Close(false);
+            return;
+        }
+        User* user = this->passwd_manager.get_user_by_login(L"ADMIN");
+        ret = ChangePasswordDialog(static_cast<wxWindow*>(this), user).ShowModal();
+        if (ret == -1 || ret == wxID_CANCEL) {
+            this->write_on_close = false;
+            this->Close(false);
+            return;
+        }
+        this->set_current_user(user);
+    }
+    else {
+        ret = DecryptPasswordDialog(static_cast<wxWindow*>(this)).ShowModal();
+        if (ret == -1 || ret == wxID_CANCEL) {
+            this->write_on_close = false;
+            this->Close(false);
+            return;
+        }
+        ret = LoginDialog(static_cast<wxWindow*>(this)).ShowModal();
+        if (ret == -1 || ret == wxID_CANCEL) {
+            this->write_on_close = false;
+            this->Close(false);
+            return;
+        }
     }
     this->configure_controls();
     this->Show();
@@ -110,7 +139,9 @@ void MainFrame::button5OnButtonClick(wxCommandEvent &event)
 
 void MainFrame::OnClose(wxCloseEvent& event)
 {
-    this->passwd_manager.write();
+    if (this->write_on_close) {
+        this->passwd_manager.write();
+    }
     event.Skip();
 }
 
@@ -281,7 +312,6 @@ ChangePasswordDialog::ChangePasswordDialog(wxWindow* parent, User* user)
 
 void ChangePasswordDialog::button9OnButtonClick(wxCommandEvent& event)
 {
-    //User* selected_user = static_cast<MainFrame*>(this->GetParent())->get_selected_user();
     this->change_password_for_user(this->user);
 }
 
@@ -330,4 +360,78 @@ void ChangePasswordDialog::new_password_mode()
     this->staticText5->Disable();
     this->staticText5->Hide();
     this->Fit();
+}
+
+
+//**********DecryptPasswordDialog**********
+DecryptPasswordDialog::DecryptPasswordDialog(wxWindow* parent)
+    : BaseCryptoPasswordDialog(parent)
+{
+    this->SetLabel(L"Расшифровка файла");
+    this->staticText8->SetLabel(L"Пароль для расшифровки");
+}
+
+void DecryptPasswordDialog::button11OnButtonClick(wxCommandEvent& event)
+{
+    // чтение файла с пользователями
+    /*std::ifstream encrypted_passwd(wstring_to_string(PASSWD_PATH),
+                         std::ios::binary | std::ios::ate);
+    std::streamsize size = encrypted_passwd.tellg();
+    encrypted_passwd.seekg(0, std::ios::beg);
+    unsigned char encrypted_buffer[size];
+    encrypted_passwd.read(reinterpret_cast<char*>(encrypted_buffer), size);
+    encrypted_passwd.close();*/
+
+    // вычисление хеша введенного пароля
+    unsigned char password_hash[32];
+    sha_256(this->textCtrl7->GetValue().ToStdWstring(),
+            reinterpret_cast<unsigned char*>(&password_hash));
+    static_cast<MainFrame*>(this->GetParent())->get_passwd_manager()
+        ->set_password_hash(password_hash);
+
+
+    // расшифровка файла и запись его во временный
+    /*unsigned char *decrypted_buffer;
+    en_de_crypt(false, encrypted_buffer, &decrypted_buffer, size,
+                password_hash, IVEC);
+
+    std::string tmp_name = "/tmp/lab_sec_decrypted";
+    std::ofstream tmp(tmp_name, std::ios::binary);
+    tmp.write(reinterpret_cast<const char*>(decrypted_buffer), size);
+    tmp.close();*/
+
+    // чтение базы пользователей из временого фала и его удаление
+    if (static_cast<MainFrame*>(this->GetParent())
+        ->get_passwd_manager()->read_from_file(PASSWD_PATH))
+    {
+        this->EndModal(0);
+        return;
+    }
+    else {
+        wxMessageDialog(NULL, L"Вы неправильно ввели пароль от базы пользоватлей!",
+                        L"Ошибка", wxOK | wxCENTRE | wxICON_WARNING).ShowModal();
+        this->EndModal(-1);
+        return;
+    }
+
+}
+
+
+//**********EncryptPasswordDialog**********
+EncryptPasswordDialog::EncryptPasswordDialog(wxWindow* parent)
+    : BaseCryptoPasswordDialog(parent)
+{
+    this->SetLabel(L"Установка пароля базы");
+    this->staticText8->SetLabel(L"Пароль для базы");
+    //this->Fit();
+}
+
+void EncryptPasswordDialog::button11OnButtonClick(wxCommandEvent& event)
+{
+    unsigned char password_hash[32];
+    sha_256(this->textCtrl7->GetValue().ToStdWstring(),
+            reinterpret_cast<unsigned char*>(&password_hash));
+    static_cast<MainFrame*>(this->GetParent())->get_passwd_manager()
+        ->set_password_hash(password_hash);
+    this->EndModal(0);
 }

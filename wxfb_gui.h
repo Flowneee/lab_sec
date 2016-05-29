@@ -140,4 +140,27 @@ class BaseChangePasswordDialog : public wxDialog
 	
 };
 
+///////////////////////////////////////////////////////////////////////////////
+/// Class BaseCryptoPasswordDialog
+///////////////////////////////////////////////////////////////////////////////
+class BaseCryptoPasswordDialog : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* staticText8;
+		wxTextCtrl* textCtrl7;
+		wxButton* button11;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void button11OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		BaseCryptoPasswordDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Ввод пароля"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 394,103 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		~BaseCryptoPasswordDialog();
+	
+};
+
 #endif //__WXFB_GUI_H__

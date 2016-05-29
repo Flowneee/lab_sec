@@ -9,6 +9,7 @@
 #include <vector>
 #include <sstream>
 
+
 extern std::map<std::string, std::string[2]> bool_to_string_translates;
 
 std::wstring string_to_wstring(const std::string& str);
@@ -20,6 +21,5 @@ std::wstring bool_to_wstring(bool in, std::string locale = "en");
 std::vector<std::string> split(const std::string &str, char delimiter);
 std::vector<std::wstring> wsplit(const std::wstring &str, wchar_t delimiter);
 
-std::wstring hash_str(std::wstring in);
-bool simpleSHA256(void* input, unsigned long length, unsigned char* md);
+
 #endif

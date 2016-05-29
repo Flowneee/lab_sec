@@ -1,5 +1,6 @@
 #include "user.hpp"
 #include "functions.hpp"
+#include "crypto.hpp"
 
 std::wstring User::str(UserStrType type)
 {

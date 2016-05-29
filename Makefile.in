@@ -12,7 +12,7 @@ WX_MODE 	= --unicode=yes --debug=$(WX_DEBUG)
 WX_LIBS 	= --libs base,core,adv
 WX_CXXFLAGS 	= $(shell $(wx) --cxxflags $(WX_MODE))
 WX_LIBFLAGS    	= $(shell $(wx) $(WX_LIBS) $(WX_MODE))
-SOURCES 	= main.cpp gui.cpp wxfb_gui.cpp user.cpp passwdmanager.cpp functions.cpp validator.cpp
+SOURCES 	= main.cpp gui.cpp wxfb_gui.cpp user.cpp passwdmanager.cpp functions.cpp validator.cpp crypto.cpp
 OBJECTS 	= $(SOURCES:.cpp=.o)
 EXECUTABLE 	= lab_sec
 
@@ -36,11 +36,12 @@ clean:
 	rm -rf *.o $(EXECUTABLE)
 
 install:
-	install $(EXECUTABLE) $(bindir)/$(EXECUTABLE)
+	install $(EXECUTABLE) "$(bindir)/$(EXECUTABLE)"
+	touch "$(sysconfdir)/passwd"
 
 uninstall:
-	rm $(bindir)/$(EXECUTABLE)
-	rm $(sysconfdir)/passwd
+	rm "$(bindir)/$(EXECUTABLE)"
+	rm "$(sysconfdir)/passwd"
 
 list:
 	@echo all

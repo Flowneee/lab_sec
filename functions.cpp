@@ -56,38 +56,3 @@ std::vector<std::wstring> wsplit(const std::wstring &str, wchar_t delimiter)
     }
     return tokens;
 }
-
-
-std::wstring hash_str(std::wstring in)  // хеширование гаммированием строки 12345678
-{
-    std::string str = "12345678";
-    std::string p = wstring_to_string(in);
-    char G = p[2];
-    char A = p[0];
-    char C = p[1];
-    std::wstringstream out;
-    out << std::hex;
-    for (auto i: str) {
-        out << (i ^ G);
-        G = (G*A + C) % 256;
-    }
-    return out.str();
-}
-
-#include <openssl/sha.h>
-#include <openssl/aes.h>
-
-bool simpleSHA256(void* input, unsigned long length, unsigned char* md)
-{
-    SHA256_CTX context;
-    if(!SHA256_Init(&context))
-        return false;
-
-    if(!SHA256_Update(&context, (unsigned char*)input, length))
-        return false;
-
-    if(!SHA256_Final(md, &context))
-        return false;
-
-    return true;
-}

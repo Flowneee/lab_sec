@@ -8,11 +8,18 @@
 #include "passwdmanager.hpp"
 #include "user.hpp"
 
-
 class MainFrame : public BaseMainFrame
 {
-private:
-
+public:
+    MainFrame(wxWindow* parent);
+    virtual ~MainFrame();
+    void initialize_frame(); // начальная настройка фрейма после логина
+    void configure_controls();
+    void fill_row(int index, User* user);
+    User* get_selected_user();
+    PasswdManager* get_passwd_manager();
+    void set_current_user(User* user);
+    void update_frame();
 protected:
     virtual void OnClose(wxCloseEvent& event);
     virtual void button1OnButtonClick(wxCommandEvent& event);
@@ -24,16 +31,7 @@ protected:
 
     PasswdManager passwd_manager;
     User* current_user;
-public:
-    MainFrame(wxWindow* parent);
-    virtual ~MainFrame();
-    void initialize_frame(); // начальная настройка фрейма после логина
-    void configure_controls();
-    void fill_row(int index, User* user);
-    User* get_selected_user();
-    PasswdManager* get_passwd_manager();
-    void set_current_user(User* user);
-    void update_frame();
+    bool write_on_close;
 };
 
 class LoginDialog : public BaseLoginDialog
@@ -77,5 +75,24 @@ protected:
 
     User* user;
 };
+
+class DecryptPasswordDialog : public BaseCryptoPasswordDialog
+{
+public:
+    DecryptPasswordDialog(wxWindow* parent);
+    virtual ~DecryptPasswordDialog() {};
+protected:
+    virtual void button11OnButtonClick(wxCommandEvent& event);
+};
+
+class EncryptPasswordDialog : public BaseCryptoPasswordDialog
+{
+public:
+    EncryptPasswordDialog(wxWindow* parent);
+    virtual ~EncryptPasswordDialog() {};
+protected:
+    virtual void button11OnButtonClick(wxCommandEvent& event);
+};
+
 
 #endif
