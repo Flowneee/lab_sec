@@ -42,6 +42,11 @@ BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	bSizer2->Add( button4, 1, wxALL|wxEXPAND, 5 );
 	
+	button12 = new wxButton( this, wxID_ANY, wxT("О программе"), wxDefaultPosition, wxSize( 233,34 ), 0 );
+	button12->SetMinSize( wxSize( 233,34 ) );
+	
+	bSizer2->Add( button12, 0, wxALL|wxEXPAND, 5 );
+	
 	button5 = new wxButton( this, wxID_ANY, wxT("Выход из программы"), wxDefaultPosition, wxSize( 233,34 ), 0 );
 	button5->SetMinSize( wxSize( 233,34 ) );
 	
@@ -63,6 +68,7 @@ BaseMainFrame::BaseMainFrame( wxWindow* parent, wxWindowID id, const wxString& t
 	button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button2OnButtonClick ), NULL, this );
 	button3->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button3OnButtonClick ), NULL, this );
 	button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button4OnButtonClick ), NULL, this );
+	button12->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button12OnButtonClick ), NULL, this );
 	button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button5OnButtonClick ), NULL, this );
 }
 
@@ -75,6 +81,7 @@ BaseMainFrame::~BaseMainFrame()
 	button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button2OnButtonClick ), NULL, this );
 	button3->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button3OnButtonClick ), NULL, this );
 	button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button4OnButtonClick ), NULL, this );
+	button12->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button12OnButtonClick ), NULL, this );
 	button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( BaseMainFrame::button5OnButtonClick ), NULL, this );
 	
 }

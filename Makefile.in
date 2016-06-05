@@ -1,9 +1,28 @@
-# my wxWidgets Makefile.in
+ # lab_sec
+ # Copyright (C) 2016  Kononov Andrey <flowneee@protonmail.com>
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU General Public License
+ # as published by the Free Software Foundation; either version 2
+ # of the License, or (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 prefix 		= @prefix@
 bindir 		= @bindir@
 exec_prefix 	= @exec_prefix@
 sysconfdir 	= @sysconfdir@
 wx		= @wx@
+user		= @user@
+group		= @group@
+SHELL		= /bin/bash
 CXX 		= g++
 CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14 -DCONFDIR='L"$(sysconfdir)"'
 LDFLAGS		= -lstdc++fs -lcrypto
@@ -16,7 +35,15 @@ SOURCES 	= main.cpp gui.cpp wxfb_gui.cpp user.cpp passwdmanager.cpp functions.cp
 OBJECTS 	= $(SOURCES:.cpp=.o)
 EXECUTABLE 	= lab_sec
 
-all: release
+# генерирование открытого ключа
+PUBKEY		= $(shell pubkey=""; \
+	while read line; \
+	do pubkey+="$$line\n"; \
+	done < <(openssl rsa -in .private_lab_sec_key.pem -pubout); \
+	pubkey+=""; \
+	echo $$pubkey;)
+
+all: clean release
 
 release: WX_DEBUG = no
 release: CXXFLAGS += -O3 -s
@@ -26,26 +53,44 @@ debug: WX_DEBUG = yes
 debug: CXXFLAGS += -g
 debug: $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS)
+$(EXECUTABLE): create_vrf $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@  $(LDFLAGS) $(WX_LIBFLAGS)
+	@rm .private_lab_sec_key.pem
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $< -o $@ $(WX_CXXFLAGS)
+	@# встраивание открытого ключа в исполняемый файл
+	$(CXX) $(CXXFLAGS) $(if $(subst crypto,,$(*F)),,-DPUBKEY='R"($(PUBKEY))"') $< -o $@ $(WX_CXXFLAGS)
 
 clean:
 	rm -rf *.o $(EXECUTABLE)
 
+create_vrf:
+	@touch "$vrf.sha256"
+	@# получение модели клавиатуры \
+	kbm=$$(setxkbmap -query | grep model | awk -F'[ ]+' '{print $$2}'); \
+	# получение количества пикселей по вертикали \
+	dvs=$$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $$4}'); \
+	# получение количества памяти \
+	tsm=$$(grep MemTotal /proc/meminfo | awk -F'[ ]+' '{print $$2}'); \
+	# получение метки тома \
+	dhd=$$(df --output=source "$$(pwd)" | grep /); \
+	# создание (временного) закрытого ключа \
+	openssl genrsa -out .private_lab_sec_key.pem 2048; \
+	# хеширование информации о компьютере и подпись хеша закрытым ключом \
+	echo $$(whoami) $$kbm $$dvs $$tsm $$dhd | openssl dgst -sha256 -sign .private_lab_sec_key.pem -out "vrf.sha256";
+
 install:
 	install $(EXECUTABLE) "$(bindir)/$(EXECUTABLE)"
+	chown $(user):$(group) "$(bindir)/$(EXECUTABLE)"
+	chmod 770 "$(bindir)/$(EXECUTABLE)"
 	touch "$(sysconfdir)/passwd"
+	chown $(user):$(group) "$(sysconfdir)/passwd"
+	chmod 770 "$(sysconfdir)/passwd"
+	mv "vrf.sha256" "$(sysconfdir)/vrf.sha256"
+	chown $(user):$(group) "$(sysconfdir)/vrf.sha256"
+	chmod 770 "$(sysconfdir)/vrf.sha256"
 
 uninstall:
 	rm "$(bindir)/$(EXECUTABLE)"
 	rm "$(sysconfdir)/passwd"
-
-list:
-	@echo all
-	@echo debug
-	@echo release
-	@echo clean
-	@echo list
+	rm "$(sysconfdir)/vrf.sha256"

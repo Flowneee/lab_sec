@@ -1,5 +1,25 @@
+/**
+ * lab_sec
+ * Copyright (C) 2016  Kononov Andrey <flowneee@protonmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 #include <wx/msgdlg.h>
 #include <experimental/filesystem>
+#include <algorithm>
 
 #include "gui.hpp"
 #include "user.hpp"
@@ -20,6 +40,14 @@ MainFrame::~MainFrame()
 void MainFrame::initialize_frame()
 {
     int ret;
+    if (!this->verify_pc()) {
+        wxMessageDialog(NULL, L"Данный исполняемый файл не предназначен для "
+                        "запуска на этом компьютере или этим пользователем!",
+                        L"Ошибка", wxOK | wxCENTRE | wxICON_WARNING).ShowModal();
+        this->write_on_close = false;
+        this->Close(false);
+        return;
+    }
     if (std::experimental::filesystem::file_size(PASSWD_PATH) < 6) {
         this->passwd_manager.set_default();
         ret = EncryptPasswordDialog(static_cast<wxWindow*>(this)).ShowModal();
@@ -137,6 +165,27 @@ void MainFrame::button5OnButtonClick(wxCommandEvent &event)
     this->Close();
 }
 
+void MainFrame::button12OnButtonClick(wxCommandEvent& event)
+{
+    std::string disclaimer = "lab_sec\n\
+Copyright (C) 2016  Kononov Andrey <flowneee@protonmail.com>\n\
+\n\
+This program is free software; you can redistribute it and/or\n\
+modify it under the terms of the GNU General Public License\n\
+as published by the Free Software Foundation; either version 2\n\
+of the License, or (at your option) any later version.\n\
+\n\
+This program is distributed in the hope that it will be useful,\n\
+but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+GNU General Public License for more details.\n\
+\n\
+You should have received a copy of the GNU General Public License\n\
+along with this program; if not, write to the Free Software\n\
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.";
+    wxMessageDialog(NULL, disclaimer, L"О программе").ShowModal();
+}
+
 void MainFrame::OnClose(wxCloseEvent& event)
 {
     if (this->write_on_close) {
@@ -199,6 +248,26 @@ PasswdManager* MainFrame::get_passwd_manager()
     return &(this->passwd_manager);
 }
 
+bool MainFrame::verify_pc()
+{
+    // сбор информации о компьютере
+    std::stringstream vrf;
+    vrf << get_whoami() << ' '  // получение текущего пользователя
+        << get_keyboard_model() << ' '  // получение модели клавиатуры
+        << get_dislay_vertical_size() << ' '  // получение количества пикселей по вертикали
+        << get_total_system_memory() << ' '  // получение количества памяти
+        << get_file_or_directory_hard_drive_label();  // получение количества пикселей по вертикали
+    std::stringstream command;
+
+    // формирование команды для проверки информации о компьютере
+    command << "/bin/bash -c 'openssl dgst -sha256 -verify <(echo -e \"" << PUBLIC_KEY
+            << "\") -signature \"" << wstring_to_string(VRF_SHA256_PATH)
+            << "\" <(echo \"" << vrf.str() << "\")'";
+
+    // проверка информации, сохранение во временной переменной и сравннение с эталоном
+    std::string result = exec(command.str().c_str());
+    return result.substr(0, result.size() - 1) == "Verified OK";
+}
 
 
 //**********LoginDialog**********

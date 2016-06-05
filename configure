@@ -583,6 +583,8 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+group
+user
 wx
 target_alias
 host_alias
@@ -626,6 +628,8 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_wx
+with_user
+with_group
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1239,6 +1243,9 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-wx=PATH          Full path to wx-config (include executable name)
+  --with-user=USER        Sets user (owner) to run program (default=current
+                          user
+  --with-group=GROUP      Sets group to run program (default=group)
 
 Report bugs to the package provider.
 _ACEOF
@@ -1669,6 +1676,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
 # Check whether --with-wx was given.
 if test "${with_wx+set}" = set; then :
   withval=$with_wx; wx=$withval
@@ -1677,6 +1685,29 @@ else
 fi
 
 wx=$wx
+
+
+
+# Check whether --with-user was given.
+if test "${with_user+set}" = set; then :
+  withval=$with_user; user=$withval
+else
+  user=$(whoami)
+fi
+
+user=$user
+
+
+
+# Check whether --with-group was given.
+if test "${with_group+set}" = set; then :
+  withval=$with_group; group=$withval
+else
+  group=users
+fi
+
+group=$group
+
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -1810,7 +1841,6 @@ DEFS=`sed -n "$ac_script" confdefs.h`
 
 ac_libobjs=
 ac_ltlibobjs=
-U=
 for ac_i in : $LIBOBJS; do test "x$ac_i" = x: && continue
   # 1. Remove the extension, and $U if already installed.
   ac_script='s/\$U\././;s/\.o$//;s/\.obj$//'

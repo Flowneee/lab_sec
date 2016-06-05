@@ -1,8 +1,26 @@
+/**
+ * lab_sec
+ * Copyright (C) 2016  Kononov Andrey <flowneee@protonmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 #include <experimental/filesystem>
 #include <locale>
 #include <codecvt>
 #include <cstdio>
-#include <wx/msgdlg.h>
 #include <exception>
 
 #include "passwdmanager.hpp"
@@ -30,33 +48,6 @@ void PasswdManager::set_default(std::wstring passwd_file_path)
 
 bool PasswdManager::read_from_file(std::wstring passwd_file_path)
 {
-    /*this->passwd_file_path = passwd_file_path;
-    // чтение файла с пользователями
-    std::ifstream encrypted_passwd(wstring_to_string(passwd_file_path),
-                                   std::ios::binary | std::ios::ate);
-    std::streamsize size = encrypted_passwd.tellg();
-    encrypted_passwd.seekg(0, std::ios::beg);
-    unsigned char encrypted_buffer[size];
-    encrypted_passwd.read(reinterpret_cast<char*>(encrypted_buffer), size);
-    encrypted_passwd.close();
-
-    // расшифровка файла и запись его во временный
-    unsigned char *decrypted_buffer;
-    en_de_crypt(false, encrypted_buffer, &decrypted_buffer, size,
-                this->password_hash, IVEC);
-
-    std::ofstream tmp(TMP_PATH, std::ios::binary);
-    tmp.write(reinterpret_cast<const char*>(decrypted_buffer), size);
-    tmp.close();
-
-    // чтение пользователей из расшифрованного файла
-    std::wfstream decrypted_passwd(TMP_PATH,
-                                   std::fstream::in | std::wfstream::out);
-    decrypted_passwd.imbue(utf8_locale);
-    bool ret =  this->read_from_stream(decrypted_passwd);
-    decrypted_passwd.close();
-    std::experimental::filesystem::remove(TMP_PATH);
-    return ret;*/
     this->passwd_file_path = passwd_file_path;
     FILE* fin = fopen(wstring_to_string(this->passwd_file_path).c_str(), "rb");
     FILE* fout = fopen(TMP_PATH, "wb");
@@ -112,34 +103,6 @@ void PasswdManager::create_default_file()
 
 void PasswdManager::write(std::wstring passwd_file_path)
 {
-    // запись текущей базы во временный файл
-    /*std::wofstream out_passwd(TMP_PATH, std::wofstream::trunc);
-    out_passwd.imbue(utf8_locale);
-    for (auto i: this->users) {
-        out_passwd << i.str(sys) << std::endl;
-    }
-    out_passwd.close();
-
-    // чтение базы в бинарном виде
-    std::ifstream decrypted_passwd(TMP_PATH,
-                                   std::ios::binary | std::ios::ate);
-    std::streamsize size = decrypted_passwd.tellg();
-    decrypted_passwd.seekg(0, std::ios::beg);
-    unsigned char decrypted_buffer[size];
-    decrypted_passwd.read(reinterpret_cast<char*>(decrypted_buffer), size);
-    decrypted_passwd.close();
-
-    unsigned char *encrypted_buffer;
-    en_de_crypt(true, decrypted_buffer, &encrypted_buffer, size,
-                this->password_hash, IVEC);
-
-    // запись зашифрованного файла в постоянный
-    std::ofstream encrypted_passwd(wstring_to_string(passwd_file_path),
-                                   std::ios::binary | std::ios::trunc);
-    encrypted_passwd.write(reinterpret_cast<char*>(encrypted_buffer), size);
-    encrypted_passwd.close();
-    std::experimental::filesystem::remove(TMP_PATH);*/
-
     std::wofstream out_passwd(TMP_PATH, std::wofstream::trunc);
     out_passwd.imbue(utf8_locale);
     for (auto i: this->users) {

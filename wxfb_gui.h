@@ -39,6 +39,7 @@ class BaseMainFrame : public wxFrame
 		wxButton* button2;
 		wxButton* button3;
 		wxButton* button4;
+		wxButton* button12;
 		wxButton* button5;
 		
 		// Virtual event handlers, overide them in your derived class
@@ -48,12 +49,13 @@ class BaseMainFrame : public wxFrame
 		virtual void button2OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void button3OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void button4OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void button12OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void button5OnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		
-		BaseMainFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Управление пользователями"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 848,244 ), long style = wxCAPTION|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER|wxSYSTEM_MENU|wxTAB_TRAVERSAL );
+		BaseMainFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Управление пользователями"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 848,288 ), long style = wxCAPTION|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER|wxSYSTEM_MENU|wxTAB_TRAVERSAL );
 		
 		~BaseMainFrame();
 	

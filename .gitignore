@@ -9,3 +9,5 @@ Makefile
 autom4te.cache
 Makefile.old
 config.*
+vrf*
+test.cpp
