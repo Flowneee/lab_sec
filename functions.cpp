@@ -100,7 +100,7 @@ std::string get_total_system_memory()
 
 std::string get_dislay_vertical_size()
 {
-    std::string result = exec("read RES_Y <<<$(xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}'); echo $RES_Y");
+    std::string result = exec("xdpyinfo | awk -F'[ x]+' '/dimensions:/{print $4}'");
     return result.substr(0, result.size() - 1);
 }
 

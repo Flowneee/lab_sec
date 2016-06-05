@@ -24,7 +24,7 @@ user		= @user@
 group		= @group@
 SHELL		= /bin/bash
 CXX 		= g++
-CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14 -DCONFDIR='L"$(sysconfdir)"'
+CXXFLAGS 	= -c -Wall -Wpedantic -std=c++14 -DCONFDIR='L"$(sysconfdir)"' -DIV='"$(IVEC)"'
 LDFLAGS		= -lstdc++fs -lcrypto
 WX_DEBUG 	= yes
 WX_MODE 	= --unicode=yes --debug=$(WX_DEBUG)
@@ -42,6 +42,9 @@ PUBKEY		= $(shell pubkey=""; \
 	done < <(openssl rsa -in .private_lab_sec_key.pem -pubout); \
 	pubkey+=""; \
 	echo $$pubkey;)
+
+# генерирование начального вектора
+$(eval IVEC=$(shell < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c$${1:-16};echo;))
 
 all: clean release
 
@@ -65,7 +68,6 @@ clean:
 	rm -rf *.o $(EXECUTABLE)
 
 create_vrf:
-	@touch "$vrf.sha256"
 	@# получение модели клавиатуры \
 	kbm=$$(setxkbmap -query | grep model | awk -F'[ ]+' '{print $$2}'); \
 	# получение количества пикселей по вертикали \
@@ -80,13 +82,15 @@ create_vrf:
 	echo $$(whoami) $$kbm $$dvs $$tsm $$dhd | openssl dgst -sha256 -sign .private_lab_sec_key.pem -out "vrf.sha256";
 
 install:
+	mkdir -p "$(bindir)"
+	mkdir -p "$(sysconfdir)"
 	install $(EXECUTABLE) "$(bindir)/$(EXECUTABLE)"
 	chown $(user):$(group) "$(bindir)/$(EXECUTABLE)"
 	chmod 770 "$(bindir)/$(EXECUTABLE)"
 	touch "$(sysconfdir)/passwd"
 	chown $(user):$(group) "$(sysconfdir)/passwd"
 	chmod 770 "$(sysconfdir)/passwd"
-	mv "vrf.sha256" "$(sysconfdir)/vrf.sha256"
+	cp "vrf.sha256" "$(sysconfdir)/vrf.sha256"
 	chown $(user):$(group) "$(sysconfdir)/vrf.sha256"
 	chmod 770 "$(sysconfdir)/vrf.sha256"
 

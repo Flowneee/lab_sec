@@ -24,7 +24,7 @@
 #define VRF_SHA256_PATH CONFDIR"/vrf.sha256"
 #define TMP_PATH "/tmp/lab_sec_tmp"
 
-static unsigned char IVEC[] = "dsczfegrthy56ju8";
+static unsigned char IVEC[] = IV;
 
 #include <string>
 #include <fstream>
